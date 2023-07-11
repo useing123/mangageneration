@@ -18,7 +18,7 @@ git clone https://github.com/useing123/mangageneration.git
 cd mangageneration
 pip install -r requirements.txt
 ```
-#Usage
+## Usage
 
 After installing the project, you can start generating manga-style images. Here is a basic example:
 
@@ -34,7 +34,7 @@ You can also control the generation process with various parameters:
 ```
 image = generator.generate(style='shoujo', characters=2, setting='school')
 ```
-#API
+## API
 
 MangaGeneration also provides a simple API that you can use to integrate manga-style image generation into your own applications. Here is an example of how to use the API:
 ```
@@ -44,15 +44,15 @@ api = MangaGeneratorAPI()
 response = api.generate(style='shoujo', characters=2, setting='school')
 image = response.get_image()
 ```
-#Contributing
+## Contributing
 
 We welcome contributions to MangaGeneration! If you have a feature request, bug report, or want to contribute code, please open an issue or pull request.
 #License
 
 MangaGeneration is licensed under the MIT License. See LICENSE for more information.
-#Contact
+## Contact
 
 If you have any questions or feedback, please feel free to contact us. You can reach us at useing322@example.com.
-#Acknowledgements
+## Acknowledgements
 
 We would like to thank the open source community for their valuable contributions to this project. We are also grateful to the researchers and developers who have made their work in machine learning and image generation available to the public.
