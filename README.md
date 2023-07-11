@@ -1,64 +1,58 @@
-# FastAPI + MongoDB Boilerplate
+# MangaGeneration
 
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/WleFVe?referralCode=UBd_g_)
+MangaGeneration is a project that utilizes machine learning to generate unique manga-style images. This project is perfect for manga enthusiasts, artists looking for inspiration, or developers wanting to integrate manga-style images into their applications.
 
-This is a FastAPI boilerplate, which includes includes:
+## Features
 
-- MongoDB as database
-- Bcrypt for password hashing
-- JWT for user token management and verification
-- Dockerfile and docker-compose files for easy deployment
-- CORS Middleware configuration
+- Generate unique manga-style images
+- Control the generation process with various parameters
+- Download the generated images for personal use
+- Integrate with other applications through a simple API
 
-## 📚 Features
+## Installation
 
-1. User registration.
-2. User authentication and token creation.
-3. User verification and token validation.
-4. Encrypted password management.
-
-## 🚀 Quick Start
-
-You'll need Docker and Docker Compose to run this application.
-
-1. Build the project
+To install MangaGeneration, you need to have Python 3.7 or later installed on your machine. You can install the project and its dependencies using the following command:
 
 ```bash
-docker-compose build
-```
+git clone https://github.com/useing123/mangageneration.git
+cd mangageneration
+pip install -r requirements.txt
 
-2. Start the project
+#Usage
 
-```bash
-docker-compose up -d
-```
-
-3. Watch logs
-
-```bash
-docker-compose logs -f app
-```
-
-This command will start the FastAPI server on port 8000, the MongoDB service on port 27017 and Mongo admin panel on port 8081.
-You can navigate to `http://localhost:8000/docs` in your browser to access the automatically generated API documentation.
-
-## 📚 Project Structure
-
-The main sections of the project are:
-
-- `app/main.py`: This is the entry point of the application.
-- `app/config.py`: This file contains the global configuration of the application.
-- `app/auth`: This folder contains the logic related to the authentication system.
-- `app/auth/service.py`: Contains the service layer logic for the authentication system.
-- `app/auth/repository`: Contains the logic for interacting with the MongoDB database.
-- `app/auth/router`: Contains the routing logic for the authentication API.
-- `app/auth/adapters`: Contains the JWT management logic.
-- `app/auth/utils`: Contains utility functions, such as password hashing.
-
-## ⚙️ Local Development
+After installing the project, you can start generating manga-style images. Here is a basic example:
 
 ```
-poetry install
-poetry shell
-sh ./scripts/launch.sh
+from mangageneration import MangaGenerator
+
+generator = MangaGenerator()
+image = generator.generate()
+image.show()
 ```
+
+You can also control the generation process with various parameters:
+```
+image = generator.generate(style='shoujo', characters=2, setting='school')
+```
+#API
+
+MangaGeneration also provides a simple API that you can use to integrate manga-style image generation into your own applications. Here is an example of how to use the API:
+```
+from mangageneration import MangaGeneratorAPI
+
+api = MangaGeneratorAPI()
+response = api.generate(style='shoujo', characters=2, setting='school')
+image = response.get_image()
+```
+#Contributing
+
+We welcome contributions to MangaGeneration! If you have a feature request, bug report, or want to contribute code, please open an issue or pull request.
+#License
+
+MangaGeneration is licensed under the MIT License. See LICENSE for more information.
+#Contact
+
+If you have any questions or feedback, please feel free to contact us. You can reach us at useing322@example.com.
+#Acknowledgements
+
+We would like to thank the open source community for their valuable contributions to this project. We are also grateful to the researchers and developers who have made their work in machine learning and image generation available to the public.
