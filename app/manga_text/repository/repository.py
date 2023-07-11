@@ -9,10 +9,11 @@ class MangaRepository:
     def __init__(self, database: Database):
         self.database = database
 
-    def create_manga(self, input_data: dict) -> InsertOneResult:
+    def create_manga(self, input_data: dict, user_id: str) -> InsertOneResult:
         payload = {
             "genre": input_data["genre"],
             "chapters_count": input_data["chapters_count"],
+            "user_id": user_id,
         }
 
         return self.database["manga_text"].insert_one(payload)
