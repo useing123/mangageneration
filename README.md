@@ -13,11 +13,11 @@ MangaGeneration is a project that utilizes machine learning to generate unique m
 
 To install MangaGeneration, you need to have Python 3.7 or later installed on your machine. You can install the project and its dependencies using the following command:
 
-```bash
+```
 git clone https://github.com/useing123/mangageneration.git
 cd mangageneration
 pip install -r requirements.txt
-
+```
 #Usage
 
 After installing the project, you can start generating manga-style images. Here is a basic example:
