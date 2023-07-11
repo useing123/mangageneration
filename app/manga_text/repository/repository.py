@@ -16,9 +16,18 @@ class MangaRepository:
             "user_id": user_id,
         }
 
-        return self.database["manga_text"].insert_one(payload)
+        return self.database["mangas"].insert_one(payload)
 
     def update_manga(self, manga_id: str, update_data: dict) -> UpdateResult:
-        return self.database["manga_text"].update_one(
+        return self.database["mangas"].update_one(
             {"_id": ObjectId(manga_id)}, {"$set": update_data}
         )
+
+    def create_chapter(self, input_data: dict, manga_id: str) -> InsertOneResult:
+        payload = {
+            "tite": input_data["title"],
+            "chapters_count": input_data["chapters_count"],
+            "manga_id": manga_id,
+        }
+
+        return self.database["manga_chapters"].insert_one(payload)

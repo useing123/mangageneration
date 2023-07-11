@@ -4,7 +4,7 @@ from app.auth.router.dependencies import parse_jwt_user_data
 from app.utils import AppModel
 from ..service import Service, get_service
 from ..adapters.jwt_service import JWTData
-from ..tasks.generators import generate_title
+from ..tasks.generators import fill_manga_info
 from . import router
 
 
@@ -33,7 +33,7 @@ def create_manga(
     num_of_chapters = input.chapters_count
 
     background_tasks.add_task(
-        generate_title,
+        fill_manga_info,
         manga_id,
         manga_genre,
         num_of_chapters,
