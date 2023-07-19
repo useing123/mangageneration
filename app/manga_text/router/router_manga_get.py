@@ -13,7 +13,7 @@ class MangaGetResponse(AppModel):
     manga_chapters_story: list[str]
 
 
-@router.get("/manga/{manga_id}", response_model=MangaGetResponse)
+@router.get("/read/{manga_id}", response_model=MangaGetResponse)
 def get_manga(
     manga_id: str,
     jwt_data: JWTData = Depends(parse_jwt_user_data),

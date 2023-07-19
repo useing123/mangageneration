@@ -18,7 +18,7 @@ class MangaCreateResponse(AppModel):
 
 
 @router.post(
-    "/manga", status_code=status.HTTP_201_CREATED, response_model=MangaCreateResponse
+    "/generate", status_code=status.HTTP_201_CREATED, response_model=MangaCreateResponse
 )
 def create_manga(
     input: MangaCreateRequest,
