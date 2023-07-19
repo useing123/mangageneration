@@ -1,6 +1,7 @@
 from pymongo.database import Database
 from pymongo.results import InsertOneResult, UpdateResult
 from bson.objectid import ObjectId
+from typing import Optional
 
 from ..utils.security import hash_password
 
@@ -31,3 +32,13 @@ class MangaRepository:
         }
 
         return self.database["manga_chapters"].insert_one(payload)
+
+    def get_manga_chapters_story(self, manga_id: str) -> Optional[list[str]]:
+        manga_data = self.database["mangas"].find_one({"_id": ObjectId(manga_id)})
+        if manga_data:
+            return manga_data.get("manga_chapters_story")
+        else:
+            return None
+
+    def get_manga(self, manga_id: str) -> Optional[dict]:
+        return self.database["mangas"].find_one({"_id": ObjectId(manga_id)})
