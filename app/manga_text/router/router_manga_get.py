@@ -11,7 +11,7 @@ class MangaGetResponse(AppModel):
     genre: str
     chapters_count: int
     manga_chapters_story: list[str]
-
+#тут дополнить что бы возврашало другие параметры помимо тех что тут прописаны
 
 @router.get("/read/{manga_id}", response_model=MangaGetResponse)
 def get_manga(

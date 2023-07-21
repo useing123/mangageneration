@@ -129,7 +129,7 @@ def generate_manga_story(manga_id: str, genre:str, manga_chapters_title: str, ma
     repository.update_manga(manga_id, {"manga_chapters_story": manga_chapters_story})
     return manga_chapters_story
 
-
+#Описываем 7 кадров манги
 def agent_create_frames_description(manga_id: str, manga_chapters_story: str, repository: MangaRepository) -> str:
     prompt = f"""
     Make it 7 frames for this manga what happens in 7 frames
@@ -151,7 +151,7 @@ def agent_create_frames_description(manga_id: str, manga_chapters_story: str, re
     return manga_frames_description
 
 
-#Эта штука извлекает диалоги из текста который сгенерировался
+#Эта штука извлекает диалоги из фреймов
 def agent_create_dialogs(manga_id: str, manga_frames_description: str, repository: MangaRepository) -> str:
     prompt = f"""
     Write Dialogs for this manga chapter story:
@@ -171,7 +171,7 @@ def agent_create_dialogs(manga_id: str, manga_frames_description: str, repositor
     repository.update_manga(manga_id, {"manga_story_dialogs": manga_story_dialogs})
     return manga_story_dialogs
 
-#Эта штука извлекает описание сцены из текста который сгенерировался
+#Эта штука извлекает описание сцены из фреймов надо переписать нормальной пока что это затычка нужно будет зайти в https://huggingface.co/datasets/Gustavosta/Stable-Diffusion-Prompts/viewer/Gustavosta--Stable-Diffusion-Prompts/test и взять от туда
 def agent_create_images_description(manga_id: str, manga_frames_description: str, repository: MangaRepository) -> str:
     """
     Upgrade a user prompt for Stable Diffusion image generation using GPT-3.5-turbo.
@@ -200,9 +200,9 @@ def agent_create_images_description(manga_id: str, manga_frames_description: str
 
 
 # Тут должна быть штука которая ИИ модель заходит в ембединг и пишет text2stable diffusion prompt
-def generate_text_to_stable_diffusion_prompt(manga_chapters_story: str) -> str:
+def generate_text_to_stable_diffusion_prompt(manga_frames_description: str) -> str:
     # Construct a prompt for text-to-stable-diffusion
-    prompt = f"Input: {manga_chapters_story}\nOutput:"
+    prompt = f"Input: {manga_frames_description}\nOutput:"
 
     # ... Additional logic to customize the prompt as needed ...
 
