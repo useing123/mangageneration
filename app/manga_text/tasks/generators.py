@@ -1,39 +1,46 @@
+import os
 import openai
 import time
 from ..service import MangaRepository
+import replicate
+import requests
+
 
 #включать выключатель
-def fill_manga_info(manga_id: str, manga_genre: str, manga_chapters_cnt: int, repository: MangaRepository) -> None:
-    title = generate_title(manga_id, manga_genre, repository)
-    time.sleep(20)
-    generate_chapter_title(manga_id, manga_genre, title, manga_chapters_cnt, repository)
-    time.sleep(20)
+def fill_manga_info(manga_id: str, manga_genre: str, prompt:str, manga_chapters_cnt: int, repository: MangaRepository) -> None:
+    title = generate_title(manga_id, manga_genre, prompt, repository)
+    time.sleep(25)
+    chapter_title = generate_chapter_title(manga_id, manga_genre, title, manga_chapters_cnt, repository)
+    time.sleep(25)
     main_characters = generate_main_characters(manga_id, title, manga_genre, repository)
-    time.sleep(20)
+    time.sleep(25)
     fun_characters = generate_funservice_characters(manga_id, title, manga_genre, repository)
-    time.sleep(20)
+    time.sleep(25)
     detailed_characters = generate_detailed_characters(manga_id, title, main_characters, fun_characters, repository)
-    time.sleep(20)
-    manga_story = generate_manga_story(manga_id, manga_genre, title, main_characters, fun_characters, repository)
-    time.sleep(20)
+    time.sleep(40)
+    manga_story = generate_manga_story(manga_id, prompt, manga_genre, title, chapter_title, main_characters, fun_characters, detailed_characters, repository)
+    time.sleep(25)
     manga_frames_description = agent_create_frames_description(manga_id, manga_story, repository)
-    time.sleep(20)
-    manga_dialogs = agent_create_dialogs(manga_id, manga_story, repository)
-    time.sleep(20)
-    prompt_image_description = agent_create_images_description(manga_id, manga_frames_description, repository)
+    time.sleep(25)
+    manga_dialogs = agent_create_dialogs(manga_id, manga_frames_description, repository)
+    time.sleep(25)
+    prompt_image_description = agent_create_images_description(manga_id, manga_frames_description, detailed_characters, repository)
+    time.sleep(25)
+    generate_image(manga_id, prompt_image_description, repository)
 
 
-
-
-def generate_title(manga_id: str, manga_genre: str, repository: MangaRepository) -> str:
-    prompt = f"Generate a title for a manga in the {manga_genre} genre:"
+def generate_title(manga_id: str, manga_genre: str, prompt:str, repository: MangaRepository) -> str:
+    prompt = f"""
+    Generate a title for a manga in the {manga_genre} genre, give output without quotation marks:
+    Keep that wish in mind {prompt}
+    """
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
         max_tokens=100,
         n=1,
         stop=None,
-        temperature=0.7,
+        temperature=1,
     )
     manga_title = response.choices[0].text.strip()
     repository.update_manga(manga_id, {"title": manga_title})
@@ -100,7 +107,7 @@ def generate_detailed_characters(manga_id: str, manga_title: str, main_character
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
-        max_tokens=1000,
+        max_tokens=3000,
         n=1,
         stop=None,
         temperature=0.7,
@@ -110,11 +117,16 @@ def generate_detailed_characters(manga_id: str, manga_title: str, main_character
     return detailed_characters
 
 
-def generate_manga_story(manga_id: str, genre:str, manga_chapters_title: str, manga_title: str, detailed_characters: str, repository: MangaRepository) -> str:
+def generate_manga_story(manga_id: str, prompt:str, genre:str, manga_chapters_title: str, manga_title: str, main_characters:str, funservice_characters:str, detailed_characters: str, repository: MangaRepository) -> str:
     prompt = f"""
     You are a manga author with 150 years of experience.Create a coherent story that's fun to read, don't limit yourself in anything. Make an interesting ending that makes you want to keep reading. Write an interesting story description for the manga {manga_title} in {genre}, for a chapter called {manga_chapters_title}.
     Avoid meaning "funservice" in the story just write names of the characters
+    Write a story that honours that wish.
+    {prompt}
     Character Info:
+    {main_characters}
+    {funservice_characters}
+    Appearance description:
     {detailed_characters}
     """
     response = openai.Completion.create(
@@ -129,12 +141,14 @@ def generate_manga_story(manga_id: str, genre:str, manga_chapters_title: str, ma
     repository.update_manga(manga_id, {"manga_chapters_story": manga_chapters_story})
     return manga_chapters_story
 
-#Описываем 7 кадров манги
+
+#Описываем 15 кадров манги
 def agent_create_frames_description(manga_id: str, manga_chapters_story: str, repository: MangaRepository) -> str:
     prompt = f"""
-    Make it 7 frames for this manga what happens in 7 frames
+    Make it 15 frames for this manga what happens in 15 frames
     give output like this:
     avoid meaning "funservice" in the frames just write names of the characters
+    Design text like this:
     Frame №1: "Something happens"
     {manga_chapters_story}
     """
@@ -144,7 +158,7 @@ def agent_create_frames_description(manga_id: str, manga_chapters_story: str, re
         max_tokens=3000,
         n=1,
         stop=None,
-        temperature=0.7,
+        temperature=0.1,
     )
     manga_frames_description = response.choices[0].text.strip()
     repository.update_manga(manga_id, {"manga_frames_description": manga_frames_description})
@@ -154,9 +168,9 @@ def agent_create_frames_description(manga_id: str, manga_chapters_story: str, re
 #Эта штука извлекает диалоги из фреймов
 def agent_create_dialogs(manga_id: str, manga_frames_description: str, repository: MangaRepository) -> str:
     prompt = f"""
-    Write Dialogs for this manga chapter story:
+    Write what happens(dialogs, sound effects, etc.) for this manga frames:
     give output like this:
-    Frame №1: "Dialogs"
+    Frame №1: "What happens in this frame"
     {manga_frames_description}
     """
     response = openai.Completion.create(
@@ -165,31 +179,29 @@ def agent_create_dialogs(manga_id: str, manga_frames_description: str, repositor
         max_tokens=3000,
         n=1,
         stop=None,
-        temperature=0.7,
+        temperature=0.1,
     )
     manga_story_dialogs = response.choices[0].text.strip()
     repository.update_manga(manga_id, {"manga_story_dialogs": manga_story_dialogs})
     return manga_story_dialogs
 
 #Эта штука извлекает описание сцены из фреймов надо переписать нормальной пока что это затычка нужно будет зайти в https://huggingface.co/datasets/Gustavosta/Stable-Diffusion-Prompts/viewer/Gustavosta--Stable-Diffusion-Prompts/test и взять от туда
-def agent_create_images_description(manga_id: str, manga_frames_description: str, repository: MangaRepository) -> str:
+def agent_create_images_description(manga_id: str, manga_frames_description: str, detailed_characters: str, repository: MangaRepository) -> str:
     """
-    Upgrade a user prompt for Stable Diffusion image generation using GPT-3.5-turbo.
-
     Parameters:
     manga_id (str): The ID of the manga.
-    manga_frames_description (str): The user's original prompt for generating images.
+    detailed_characters (str): The detailed description of the characters.
+    manga_frames_description (str): The frames description of the manga, what happens on the frames.
     repository (MangaRepository): An instance of the MangaRepository class.
-
     Returns:
-    None
+    str: Prompts for painting images using Stable Diffusion.
     """
-    prompt = f"I need to upgrade the following prompt for generating an image using Stable Diffusion: '{manga_frames_description}'. Please provide a detailed and specific version of this prompt."
+    prompt = f"I need to upgrade the following prompt for generating an image using Stable Diffusion: '{detailed_characters}' '{manga_frames_description}'. Please provide a detailed and specific version of this prompt."
     
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": "You are manga painter with 150 years experience. You need to draw 15 frames for this manga."},
             {"role": "user", "content": prompt}
         ]
     )
@@ -200,15 +212,59 @@ def agent_create_images_description(manga_id: str, manga_frames_description: str
 
 
 # Тут должна быть штука которая ИИ модель заходит в ембединг и пишет text2stable diffusion prompt
-def generate_text_to_stable_diffusion_prompt(manga_frames_description: str) -> str:
-    # Construct a prompt for text-to-stable-diffusion
-    prompt = f"Input: {manga_frames_description}\nOutput:"
+# def generate_text_to_stable_diffusion_prompt(manga_frames_description: str) -> str:
+#     # Construct a prompt for text-to-stable-diffusion
+#     prompt = f"Input: {manga_frames_description}\nOutput:"
 
-    # ... Additional logic to customize the prompt as needed ...
+#     # ... Additional logic to customize the prompt as needed ...
 
-    return prompt
+#     return prompt
+
+# def generate_image(manga_id: str, manga_images_description: str, repository: MangaRepository): 
+#     result = replicate.run(
+#         "cjwbw/anything-v4.0",
+#         input={
+#             "prompt": manga_images_description,
+#             # "negative_prompt": negative_prompt,
+#             # "lora_urls": lora_urls,
+#             # "lora_scales": lora_scales
+#         }
+#     )
+#     result = result["output"]
+#     repository.update_manga(manga_id, {"result": result})
+#     return result    
 
 
+def generate_image(manga_id: str, manga_images_description: str, repository: MangaRepository): 
+    # Your API key goes here
+    api_key = os.getenv('GETIMG_API_KEY')
+
+    # The URL of the "Text to Image" endpoint
+    url = 'https://api.getimg.ai/v1/openjourney-v4/text-to-image'
+
+    # The headers for the request
+    headers = {
+        'Authorization': f'Bearer {api_key}',
+        'Content-Type': 'application/json',
+    }
+
+    # The data for the request
+    data = {
+        'text': manga_images_description,
+    }
+
+    # Make the POST request
+    response = requests.post(url, headers=headers, json=data)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # The response body contains the image data
+        image_data = response.content
+        repository.update_manga(manga_id, {"result": image_data})
+        return image_data
+    else:
+        print(f'Request failed with status code {response.status_code}')
+        return None
 
 #Тут должна быть штука которая берет текст и генерирует картинку через репликат и в отдельную колекцию сохраняет урлы
 

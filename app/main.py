@@ -6,6 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 import openai
 from dotenv import load_dotenv
 
+
 from app.auth.router import router as auth_router
 from app.manga_text.router import router as manga_text_router
 from app.config import client, env, fastapi_config
@@ -24,6 +25,8 @@ def shutdown_db_client():
 @app.on_event("startup")
 def initialize_openai():
     openai.api_key = os.getenv("OPENAI_API_KEY")
+    replicate_api_key = os.getenv('REPLICATE_API_KEY')
+    api_key = os.getenv('GETIMG_API_KEY')
 
 
 app.add_middleware(

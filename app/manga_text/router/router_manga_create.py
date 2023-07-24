@@ -10,6 +10,7 @@ from . import router
 
 class MangaCreateRequest(AppModel):
     genre: str
+    prompt: str
     chapters_count: int
 
 
@@ -31,11 +32,13 @@ def create_manga(
     manga_id = str(result.inserted_id)
     manga_genre = input.genre
     num_of_chapters = input.chapters_count
+    prompt = input.prompt
 
     background_tasks.add_task(
         fill_manga_info,
         manga_id,
         manga_genre,
+        prompt,
         num_of_chapters,
         svc.repository
     )
