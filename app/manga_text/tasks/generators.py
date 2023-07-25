@@ -214,57 +214,57 @@ def agent_create_images_description(manga_id: str, manga_frames_description: str
 # Тут должна быть штука которая ИИ модель заходит в ембединг и пишет text2stable diffusion prompt
 # def generate_text_to_stable_diffusion_prompt(manga_frames_description: str) -> str:
 #     # Construct a prompt for text-to-stable-diffusion
-#     prompt = f"Input: {manga_frames_description}\nOutput:"
+#     prompt = f"Input: {manga_frames_descripti let a: on}\nOutput:"
 
 #     # ... Additional logic to customize the prompt as needed ...
 
 #     return prompt
 
-# def generate_image(manga_id: str, manga_images_description: str, repository: MangaRepository): 
-#     result = replicate.run(
-#         "cjwbw/anything-v4.0",
-#         input={
-#             "prompt": manga_images_description,
-#             # "negative_prompt": negative_prompt,
-#             # "lora_urls": lora_urls,
-#             # "lora_scales": lora_scales
-#         }
-#     )
-#     result = result["output"]
-#     repository.update_manga(manga_id, {"result": result})
-#     return result    
-
-
 def generate_image(manga_id: str, manga_images_description: str, repository: MangaRepository): 
-    # Your API key goes here
-    api_key = os.getenv('GETIMG_API_KEY')
+    result = replicate.run(
+        "cjwbw/anything-v4.0:42a996d39a96aedc57b2e0aa8105dea39c9c89d9d266caf6bb4327a1c191b061",
+        input={
+            "prompt": manga_images_description,
+            # "negative_prompt": negative_prompt,
+            # "lora_urls": lora_urls,
+            # "lora_scales": lora_scales
+        }
+    )
+    result = result["output"]
+    repository.update_manga(manga_id, {"result": result})
+    return result    
 
-    # The URL of the "Text to Image" endpoint
-    url = 'https://api.getimg.ai/v1/openjourney-v4/text-to-image'
 
-    # The headers for the request
-    headers = {
-        'Authorization': f'Bearer {api_key}',
-        'Content-Type': 'application/json',
-    }
+# def generate_image(manga_id: str, manga_images_description: str, repository: MangaRepository): 
+#     # Your API key goes here
+#     api_key = os.getenv('GETIMG_API_KEY')
 
-    # The data for the request
-    data = {
-        'text': manga_images_description,
-    }
+#     # The URL of the "Text to Image" endpoint
+#     url = 'https://api.getimg.ai/v1/openjourney-v4/text-to-image'
 
-    # Make the POST request
-    response = requests.post(url, headers=headers, json=data)
+#     # The headers for the request
+#     headers = {
+#         'Authorization': f'Bearer {api_key}',
+#         'Content-Type': 'application/json',
+#     }
 
-    # Check if the request was successful
-    if response.status_code == 200:
-        # The response body contains the image data
-        image_data = response.content
-        repository.update_manga(manga_id, {"result": image_data})
-        return image_data
-    else:
-        print(f'Request failed with status code {response.status_code}')
-        return None
+#     # The data for the request
+#     data = {
+#         'text': manga_images_description,
+#     }
+
+#     # Make the POST request
+#     response = requests.post(url, headers=headers, json=data)
+
+#     # Check if the request was successful
+#     if response.status_code == 200:
+#         # The response body contains the image data
+#         image_data = response.content
+#         repository.update_manga(manga_id, {"result": image_data})
+#         return image_data
+#     else:
+#         print(f'Request failed with status code {response.status_code}')
+#         return None
 
 #Тут должна быть штука которая берет текст и генерирует картинку через репликат и в отдельную колекцию сохраняет урлы
 
