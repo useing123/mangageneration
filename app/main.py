@@ -6,11 +6,10 @@ from starlette.middleware.cors import CORSMiddleware
 import openai
 from dotenv import load_dotenv
 
-
 from app.auth.router import router as auth_router
 from app.manga_text.router import router as manga_text_router
 from app.config import client, env, fastapi_config
-
+from app.utils import imgur_client_id, imgur_client_secret, replicate_api_key
 
 app = FastAPI(**fastapi_config)
 
@@ -25,8 +24,10 @@ def shutdown_db_client():
 @app.on_event("startup")
 def initialize_openai():
     openai.api_key = os.getenv("OPENAI_API_KEY")
-    replicate_api_key = os.getenv('REPLICATE_API_KEY')
-    api_key = os.getenv('GETIMG_API_KEY')
+    # replicate_api_key = os.getenv('REPLICATE_API_KEY')
+    replicate_api_key.REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
+    imgur_client_id.IMGUR_CLIENT_ID = os.getenv("IMGUR_CLIENT_ID")
+    imgur_client_secret.IMGUR_CLIENT_SECRET = os.getenv("IMGUR_CLIENT_SECRET")
 
 
 app.add_middleware(

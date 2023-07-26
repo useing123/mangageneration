@@ -4,7 +4,8 @@ import time
 from ..service import MangaRepository
 import replicate
 import requests
-
+import re
+import base64
 
 #включать выключатель
 def fill_manga_info(manga_id: str, manga_genre: str, prompt:str, manga_chapters_cnt: int, repository: MangaRepository) -> None:
@@ -221,19 +222,43 @@ def agent_create_images_description(manga_id: str, manga_frames_description: str
 #     return prompt
 
 def generate_image(manga_id: str, manga_images_description: str, repository: MangaRepository): 
-    result = replicate.run(
-        "cjwbw/anything-v4.0:42a996d39a96aedc57b2e0aa8105dea39c9c89d9d266caf6bb4327a1c191b061",
-        input={
-            "prompt": manga_images_description,
-            # "negative_prompt": negative_prompt,
-            # "lora_urls": lora_urls,
-            # "lora_scales": lora_scales
-        }
-    )
-    result = result["output"]
-    repository.update_manga(manga_id, {"result": result})
-    return result    
+    os.environ["REPLICATE_API_TOKEN"] = replicate_api_key
 
+    # Split the input text into frames
+    frames = re.split(r'Frame №\d+: ', input_text)[1:]
+
+    imgur_links = []
+
+    for frame in frames:
+        # Call the Replicate API to generate an image
+        model_version = "cjwbw/anything-v4.0:42a996d39a96aedc57b2e0aa8105dea39c9c89d9d266caf6bb4327a1c191b061"
+        inputs = {"prompt": frame}
+        output_urls = replicate.run(model_version, input=inputs)
+
+        # The output_urls is a list of URLs, we'll just use the first one
+        image_url = output_urls[0]
+
+        # Download the image
+        image_response = requests.get(image_url)
+
+        # Convert the image to base64
+        image_base64 = base64.b64encode(image_response.content).decode()
+
+        # Call the Imgur API to upload the image
+        headers = {
+            "Authorization": f"Client-ID {IMGUR_CLIENT_ID}"
+        }
+        data = {
+            "image": image_base64,
+            "type": "base64"
+        }
+        response = requests.post("https://api.imgur.com/3/image", headers=headers, data=data)
+
+        # Add the Imgur link to the list
+        imgur_links.append(response.json()["data"]["link"])
+
+    # Return the Imgur links
+    return {"imgur_links": imgur_links}
 
 # def generate_image(manga_id: str, manga_images_description: str, repository: MangaRepository): 
 #     # Your API key goes here
