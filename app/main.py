@@ -9,11 +9,14 @@ from dotenv import load_dotenv
 from app.auth.router import router as auth_router
 from app.manga_text.router import router as manga_text_router
 from app.config import client, env, fastapi_config
-from app.utils import imgur_client_id, imgur_client_secret, replicate_api_key
+
 
 app = FastAPI(**fastapi_config)
 
 load_dotenv()
+REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
+IMGUR_CLIENT_ID = os.getenv("IMGUR_CLIENT_ID")
+IMGUR_CLIENT_SECRET = os.getenv("IMGUR_CLIENT_SECRET")
 
 
 @app.on_event("shutdown")
@@ -25,9 +28,9 @@ def shutdown_db_client():
 def initialize_openai():
     openai.api_key = os.getenv("OPENAI_API_KEY")
     # replicate_api_key = os.getenv('REPLICATE_API_KEY')
-    replicate_api_key.REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
-    imgur_client_id.IMGUR_CLIENT_ID = os.getenv("IMGUR_CLIENT_ID")
-    imgur_client_secret.IMGUR_CLIENT_SECRET = os.getenv("IMGUR_CLIENT_SECRET")
+    # replicate_api_key.REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
+    # imgur_client_id.IMGUR_CLIENT_ID = os.getenv("IMGUR_CLIENT_ID")
+    # imgur_client_secret.IMGUR_CLIENT_SECRET = os.getenv("IMGUR_CLIENT_SECRET")
 
 
 app.add_middleware(

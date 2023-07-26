@@ -42,3 +42,5 @@ class MangaRepository:
 
     def get_manga(self, manga_id: str) -> Optional[dict]:
         return self.database["mangas"].find_one({"_id": ObjectId(manga_id)})
+    
+    
