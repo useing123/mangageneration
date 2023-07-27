@@ -62,7 +62,7 @@ def generate_chapter_title(manga_id: str, manga_genre: str, manga_title: str, ma
         response = openai.Completion.create(
             engine="text-davinci-003",
             prompt=prompt,
-            max_tokens=100,
+            max_tokens=125,
             n=1,
             stop=None,
             temperature=0.7,
@@ -79,7 +79,7 @@ def generate_main_characters(manga_id: str, manga_title: str, genre: str, reposi
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
-        max_tokens=1125,
+        max_tokens=890,
         n=1,
         stop=None,
         temperature=0.7,
@@ -97,7 +97,7 @@ def generate_funservice_characters(manga_id: str, manga_title: str, genre: str, 
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
-        max_tokens=1228,
+        max_tokens=890,
         n=1,
         stop=None,
         temperature=0.7,
@@ -115,7 +115,7 @@ def generate_detailed_characters(manga_id: str, manga_title: str, main_character
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
-        max_tokens=1250,
+        max_tokens=800,
         n=1,
         stop=None,
         temperature=0.7,
