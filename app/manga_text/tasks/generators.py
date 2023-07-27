@@ -9,6 +9,10 @@ import requests
 import base64
 import re
 
+REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
+IMGUR_CLIENT_ID = os.getenv("IMGUR_CLIENT_ID")
+IMGUR_CLIENT_SECRET = os.getenv("IMGUR_CLIENT_SECRET")
+
 
 #включать выключатель
 def fill_manga_info(manga_id: str, manga_genre: str, prompt:str, manga_chapters_cnt: int, repository: MangaRepository) -> None:
@@ -265,8 +269,8 @@ def agent_create_images_description(manga_id: str, manga_frames_description: str
 
 
 def generate_image(manga_id: str, manga_images_description: str, repository: MangaRepository): 
-    replicate_api_token = "REPLICATE_API_TOKEN"
-    imgur_client_id_value = "IMGUR_CLIENT_ID"
+    replicate_api_token = REPLICATE_API_TOKEN
+    imgur_client_id_value = IMGUR_CLIENT_ID
 
     frames = re.split(r'Frame №\d+: ', manga_images_description)[1:]
 
