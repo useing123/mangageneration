@@ -280,7 +280,7 @@ def generate_image(manga_id: str, manga_images_description: str, repository: Man
         # We need to set the token environment variable for the replicate.run function
         os.environ['REPLICATE_API_TOKEN'] = replicate_api_token
 
-        outputs = replicate.run(model_version, inputs)
+        outputs = replicate.run(model_version, input=inputs)
 
         # The outputs contains a list of URLs, we'll just use the first one
         image_url = outputs[0]
