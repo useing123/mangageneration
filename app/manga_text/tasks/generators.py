@@ -26,7 +26,7 @@ def fill_manga_info(manga_id: str, manga_genre: str, prompt:str, manga_chapters_
     time.sleep(25)
     detailed_characters = generate_detailed_characters(manga_id, title, main_characters, fun_characters, repository)
     time.sleep(40)
-    manga_story = generate_manga_story(manga_id, prompt, manga_genre, title, chapter_title, main_characters, fun_characters, detailed_characters, repository)
+    manga_story = generate_manga_story(manga_id, manga_genre, title, chapter_title, main_characters, fun_characters, detailed_characters, repository)
     time.sleep(25)
     manga_frames_description = agent_create_frames_description(manga_id, manga_story, repository)
     time.sleep(25)
@@ -79,7 +79,7 @@ def generate_main_characters(manga_id: str, manga_title: str, genre: str, reposi
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
-        max_tokens=890,
+        max_tokens=3000,
         n=1,
         stop=None,
         temperature=0.7,
@@ -97,7 +97,7 @@ def generate_funservice_characters(manga_id: str, manga_title: str, genre: str, 
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
-        max_tokens=890,
+        max_tokens=3000,
         n=1,
         stop=None,
         temperature=0.7,
@@ -115,7 +115,7 @@ def generate_detailed_characters(manga_id: str, manga_title: str, main_character
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
-        max_tokens=800,
+        max_tokens=4096,
         n=1,
         stop=None,
         temperature=0.7,
@@ -125,12 +125,10 @@ def generate_detailed_characters(manga_id: str, manga_title: str, main_character
     return detailed_characters
 
 
-def generate_manga_story(manga_id: str, prompt:str, genre:str, manga_chapters_title: str, manga_title: str, main_characters:str, funservice_characters:str, detailed_characters: str, repository: MangaRepository) -> str:
+def generate_manga_story(manga_id: str, genre:str, manga_chapters_title: str, manga_title: str, main_characters:str, funservice_characters:str, detailed_characters: str, repository: MangaRepository) -> str:
     prompt = f"""
     You are a manga author with 150 years of experience.Create a coherent story that's fun to read, don't limit yourself in anything. Make an interesting ending that makes you want to keep reading. Write an interesting story description for the manga {manga_title} in {genre}, for a chapter called {manga_chapters_title}.
-    Avoid meaning "funservice" in the story just write names of the characters
-    Write a story that honours that wish.
-    {prompt}
+    Avoid meaning "funservice" in the story just write names of the characters.
     Character Info:
     {main_characters}
     {funservice_characters}
@@ -163,7 +161,7 @@ def agent_create_frames_description(manga_id: str, manga_chapters_story: str, re
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
-        max_tokens=3000,
+        max_tokens=4096,
         n=1,
         stop=None,
         temperature=0.1,
