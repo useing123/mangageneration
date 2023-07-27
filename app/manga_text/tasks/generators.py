@@ -33,7 +33,7 @@ def fill_manga_info(manga_id: str, manga_genre: str, prompt:str, manga_chapters_
     manga_dialogs = agent_create_dialogs(manga_id, manga_frames_description, repository)
     time.sleep(25)
     prompt_image_description = agent_create_images_description(manga_id, manga_frames_description, detailed_characters, repository)
-    time.sleep(25)
+    # time.sleep(25)
     generate_image(manga_id, prompt_image_description, repository)
 
 
@@ -115,7 +115,7 @@ def generate_detailed_characters(manga_id: str, manga_title: str, main_character
     response = openai.Completion.create(
         engine="text-davinci-003",
         prompt=prompt,
-        max_tokens=3000,
+        max_tokens=1400,
         n=1,
         stop=None,
         temperature=0.7,
