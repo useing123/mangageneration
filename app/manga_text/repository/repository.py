@@ -44,4 +44,4 @@ class MangaRepository:
         return self.database["mangas"].find_one({"_id": ObjectId(manga_id)})
     
     def get_all_mangas(self) -> list[dict]:
-        return list(self.database["mangas"].find({}, {"_id": 1, "genre": 1, "main_characters": 1}))
+        return list(self.database["mangas"].find({}, {"_id": 1, "genre": 1, "title": 1, "main_characters": 1}))
