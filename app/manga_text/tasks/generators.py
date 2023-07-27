@@ -9,6 +9,10 @@ import requests
 import base64
 import re
 
+REPLICATE_API_TOKEN = os.getenv("REPLICATE_API_TOKEN")
+IMGUR_CLIENT_ID = os.getenv("IMGUR_CLIENT_ID")
+IMGUR_CLIENT_SECRET = os.getenv("IMGUR_CLIENT_SECRET")
+
 
 #включать выключатель
 def fill_manga_info(manga_id: str, manga_genre: str, prompt:str, manga_chapters_cnt: int, repository: MangaRepository) -> None:
@@ -265,8 +269,8 @@ def agent_create_images_description(manga_id: str, manga_frames_description: str
 
 
 def generate_image(manga_id: str, manga_images_description: str, repository: MangaRepository): 
-    replicate_api_token = "REPLICATE_API_TOKEN"
-    imgur_client_id_value = "IMGUR_CLIENT_ID"
+    replicate_api_token = REPLICATE_API_TOKEN
+    imgur_client_id_value = IMGUR_CLIENT_ID
 
     frames = re.split(r'Frame №\d+: ', manga_images_description)[1:]
 
@@ -280,7 +284,7 @@ def generate_image(manga_id: str, manga_images_description: str, repository: Man
         # We need to set the token environment variable for the replicate.run function
         os.environ['REPLICATE_API_TOKEN'] = replicate_api_token
 
-        outputs = replicate.run(model_version, inputs)
+        outputs = replicate.run(model_version, input=inputs)
 
         # The outputs contains a list of URLs, we'll just use the first one
         image_url = outputs[0]
