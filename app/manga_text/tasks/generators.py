@@ -40,7 +40,7 @@ def fill_manga_info(manga_id: str, manga_genre: str, prompt:str, manga_chapters_
 def generate_title(manga_id: str, manga_genre: str, prompt:str, repository: MangaRepository) -> str:
     prompt = f"""
     Generate a title for a manga in the {manga_genre} genre, give output without quotation marks:
-    Keep that wish in mind {prompt}
+    Keep this {prompt} in mind 
     """
     response = openai.Completion.create(
         engine="text-davinci-003",
